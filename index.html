@@ -1,0 +1,176 @@
+
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JARVIS AI</title>
+<style>
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: radial-gradient(circle at center, #102c50, #030914 65%);
+  color: #8bdcff;
+  font-family: Arial, sans-serif;
+  text-align: center;
+  padding: 25px 18px;
+}
+h1 {
+  letter-spacing: 7px;
+  text-shadow: 0 0 18px #00aaff;
+}
+.status {
+  color: #53e8bb;
+  font-size: 12px;
+  letter-spacing: 3px;
+}
+.core {
+  width: 220px;
+  height: 220px;
+  margin: 55px auto 25px;
+  border-radius: 50%;
+  border: 3px solid #27baff;
+  box-shadow: 0 0 25px #008cff,
+              inset 0 0 35px #0077ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: pulse 3s infinite;
+}
+.core span {
+  font-size: 48px;
+  text-shadow: 0 0 20px #00aaff;
+}
+@keyframes pulse {
+  50% { box-shadow: 0 0 55px #008cff,
+    inset 0 0 55px #0077ff; }
+}
+.message {
+  min-height: 65px;
+  margin: 25px 0;
+  padding: 18px;
+  border: 1px solid #1678b7;
+  border-radius: 14px;
+  background: #071a30;
+  line-height: 1.5;
+}
+input {
+  width: 100%;
+  padding: 15px;
+  border-radius: 10px;
+  border: 1px solid #168bd0;
+  background: #071a30;
+  color: white;
+  font-size: 16px;
+}
+button {
+  margin: 10px 4px;
+  padding: 14px 20px;
+  border-radius: 12px;
+  border: 1px solid #28baff;
+  background: #07345b;
+  color: #a9e8ff;
+  font-size: 15px;
+}
+button:active { background: #1269a0; }
+.footer {
+  margin-top: 35px;
+  font-size: 11px;
+  letter-spacing: 2px;
+  color: #4889b8;
+}
+</style>
+</head>
+<body>
+
+<h1>J.A.R.V.I.S.</h1>
+<div class="status">● SYSTEM ONLINE</div>
+
+<div class="core"><span>J</span></div>
+
+<div class="status">PERSONAL AI ASSISTANT</div>
+
+<div class="message" id="message">
+Guten Tag, Chef. Ich bin bereit.
+</div>
+
+<input id="question"
+placeholder="Schreiben Sie einen Befehl ...">
+
+<br>
+
+<button onclick="send()">Senden</button>
+<button onclick="speakWelcome()">🔊 Stimme</button>
+<button onclick="listen()">🎙️ Mikrofon</button>
+
+<div class="footer">
+JARVIS AI · VERSION 1.0
+</div>
+
+<script>
+const message = document.getElementById("message");
+
+function reply(text) {
+  message.textContent = text;
+  const speech = new SpeechSynthesisUtterance(text);
+  speech.lang = "de-DE";
+  speech.rate = 0.88;
+  speech.pitch = 0.85;
+  speechSynthesis.cancel();
+  speechSynthesis.speak(speech);
+}
+
+function speakWelcome() {
+  reply("Guten Tag, Chef. Alle Systeme sind bereit.");
+}
+
+function send() {
+  const q = document.getElementById("question");
+  const text = q.value.trim().toLowerCase();
+
+  if (!text) return;
+
+  if (text.includes("hallo")) {
+    reply("Guten Tag, Chef. Wie kann ich Ihnen helfen?");
+  } else if (text.includes("name")) {
+    reply("Mein Name ist JARVIS. Ihr persönlicher Assistent.");
+  } else if (text.includes("zeit")) {
+    reply("Die aktuelle Uhrzeit ist " +
+      new Date().toLocaleTimeString("de-DE") + ", Chef.");
+  } else if (text.includes("danke")) {
+    reply("Sehr gerne, Chef. Dafür bin ich da.");
+  } else if (text.includes("status")) {
+    reply("Alle Demo-Systeme sind betriebsbereit, Chef.");
+  } else {
+    reply("Befehl erhalten, Chef. Diese Funktion wird später mit meiner KI verbunden.");
+  }
+
+  q.value = "";
+}
+
+function listen() {
+  const Recognition = window.SpeechRecognition ||
+    window.webkitSpeechRecognition;
+
+  if (!Recognition) {
+    reply("Die Mikrofonsteuerung wird von diesem Browser leider nicht unterstützt.");
+    return;
+  }
+
+  const recognition = new Recognition();
+  recognition.lang = "de-DE";
+  recognition.onresult = function(event) {
+    document.getElementById("question").value =
+      event.results[0][0].transcript;
+    send();
+  };
+  recognition.onerror = function() {
+    message.textContent = "Spracherkennung nicht verfügbar.";
+  };
+  recognition.start();
+}
+</script>
+
+</body>
+</html>
